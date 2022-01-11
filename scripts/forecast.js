@@ -1,36 +1,36 @@
-const key = 'HShAczGxvr5yfqIJnEMQrJVvbUJ66P8G';
 
-// get weather information
+class Forecast{
+    constructor(){
+        this.key = 'HShAczGxvr5yfqIJnEMQrJVvbUJ66P8G';
+        this.weatherURL = 'http://dataservice.accuweather.com/currentconditions/v1/';
+        this.cityURL = 'http://dataservice.accuweather.com/locations/v1/cities/search';
+    }
 
-const getWeather = async (id) => {
+    // Methods
+    async updateCity(city){
 
-    const base = 'http://dataservice.accuweather.com/currentconditions/v1/';
-    const query = `${id}?apikey=${key}`;
+    // Get the city typed by user and store in cityDets
+    const cityDets = await this.getCity(city);
 
-    const response = await fetch(base + query);
-    const data = await response.json();
+    // get the eather response and pass in the key and store response in weather
+    const weather = await this.getWeather(cityDets.Key);
 
-    return data[0];
+    // return 2 objects that stores 2 details weather and city details
+    return { cityDets, weather };
+    }
 
-
-};
-
-// get city information
-
-const getCity = async (city) => {
-
-    const base = 'http://dataservice.accuweather.com/locations/v1/cities/search';
-    const query = `?apikey=${key}&q=${city}`;
-
-    const response = await fetch(base + query);
-    const data = await response.json();
-
-    return data[0];
-};
-
-getCity('liverpool').then(data => {
-        return getWeather(data.Key);
-    }).then(data => {
-        console.log(data);
-    }).catch(err => console.log(err));
-
+    // Get city information function
+    async getCity(city){
+        const query = `?apikey=${this.key}&q=${city}`;
+        const response = await fetch(this.cityURL + query);
+        const data = await response.json();
+        return data[0];
+    }
+    // Get weather information function
+    async getWeather(id){
+        const query = `${id}?apikey=${this.key}`;
+        const response = await fetch(this.weatherURL + query);
+        const data = await response.json();
+        return data[0];
+    }
+}
